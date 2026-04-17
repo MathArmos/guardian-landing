@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardian Agent</title>
+  <meta name="description" content="Portaria inteligente via WhatsApp. Segurança e controle de acesso automatizados para condomínios." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --gray-100: #f5f5f5;
+      --gray-200: #e5e5e5;
+      --gray-400: #a3a3a3;
+      --gray-600: #525252;
+      --gray-800: #262626;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 6px 16px;
+      margin-bottom: 40px;
+    }
+
+    .hero-badge span { color: var(--white); }
+
+    h1 {
+      font-size: clamp(40px, 7vw, 80px);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 28px;
+    }
+
+    h1 strong {
+      font-weight: 500;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--gray-400);
+      max-width: 520px;
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 14px 32px;
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--black);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-secondary {
+      font-size: 14px;
+      font-weight: 400;
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white);
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── STATS ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      padding: 64px 48px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-number {
+      font-size: 40px;
+      font-weight: 300;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    /* ── SECTION ── */
+    section {
+      padding: 96px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      max-width: 600px;
+      margin-bottom: 16px;
+    }
+
+    .section-title strong { font-weight: 500; }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--gray-400);
+      max-width: 480px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-top: 64px;
+      align-items: start;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      padding: 32px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .step:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .step-number {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-600);
+      min-width: 24px;
+      margin-top: 2px;
+    }
+
+    .step-content h3 {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: var(--gray-400);
+      line-height: 1.6;
+    }
+
+    .chat-mock {
+      background: var(--gray-800);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: sticky;
+      top: 88px;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 4px;
+    }
+
+    .chat-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--gray-600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .chat-name { font-size: 14px; font-weight: 500; }
+    .chat-status { font-size: 12px; color: var(--gray-400); }
+
+    .bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .bubble.received {
+      background: rgba(255,255,255,0.06);
+      color: var(--gray-200);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble.sent {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble-time {
+      font-size: 10px;
+      color: var(--gray-600);
+      margin-top: 2px;
+    }
+
+    .bubble-group { display: flex; flex-direction: column; }
+    .bubble-group.right { align-items: flex-end; }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 64px;
+    }
+
+    .feature-card {
+      background: var(--black);
+      padding: 36px 32px;
+      transition: background 0.2s;
+    }
+
+    .feature-card:hover { background: var(--gray-800); }
+
+    .feature-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: var(--gray-400);
+      line-height: 1.6;
+    }
+
+    /* ── CTA BOTTOM ── */
+    .cta-section {
+      text-align: center;
+      padding: 120px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .cta-section h2 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .cta-section p {
+      font-size: 16px;
+      color: var(--gray-400);
+      margin-bottom: 40px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .footer-info {
+      font-size: 12px;
+      color: var(--gray-600);
+      text-align: right;
+    }
+
+    /* ── INTELLIGENCE ── */
+    .intel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 64px;
+    }
+
+    .intel-card {
+      background: var(--black);
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: background 0.2s;
+    }
+
+    .intel-card:hover { background: var(--gray-800); }
+
+    .intel-symbol {
+      font-size: 20px;
+      color: var(--gray-400);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .intel-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .intel-desc {
+      font-size: 13px;
+      color: var(--gray-400);
+      line-height: 1.7;
+    }
+
+    .intel-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-600);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 3px 10px;
+      margin-top: 4px;
+      width: fit-content;
+    }
+
+    /* ── PRIVACY ── */
+    .privacy-section {
+      padding: 96px 48px;
+      max-width: 800px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .privacy-section h2 {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      margin-bottom: 32px;
+    }
+
+    .privacy-section h3 {
+      font-size: 15px;
+      font-weight: 500;
+      margin-top: 32px;
+      margin-bottom: 10px;
+    }
+
+    .privacy-section p, .privacy-section li {
+      font-size: 14px;
+      color: var(--gray-400);
+      line-height: 1.8;
+    }
+
+    .privacy-section ul {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .stats { gap: 32px; padding: 48px 24px; }
+      section { padding: 72px 24px; }
+      .how-grid { grid-template-columns: 1fr; }
+      .chat-mock { position: static; }
+      .features-grid { grid-template-columns: 1fr; }
+      .intel-grid { grid-template-columns: 1fr; }
+      footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+      .footer-info { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Guardian Agent</a>
+    <ul class="nav-links">
+      <li><a href="#como-funciona">Como funciona</a></li>
+      <li><a href="#recursos">Recursos</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a href="#contato" class="nav-cta">Fale conosco</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Novo &nbsp;·&nbsp; <span>Portaria via WhatsApp</span></div>
+    <h1>Controle de acesso<br /><strong>inteligente e automatizado</strong></h1>
+    <p class="hero-sub">
+      Seu condomínio seguro 24h com um porteiro virtual que responde, valida e registra acessos diretamente pelo WhatsApp.
+    </p>
+    <div class="hero-actions">
+      <a href="#contato" class="btn-primary">Solicitar demonstração</a>
+      <a href="#como-funciona" class="btn-secondary">Ver como funciona</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-number">85%</div>
+      <div class="stat-label">de resolução automática</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">24h</div>
+      <div class="stat-label">disponibilidade contínua</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">&lt;10s</div>
+      <div class="stat-label">tempo médio de resposta</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">acessos registrados</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="como-funciona">
+    <div class="section-label">Como funciona</div>
+    <h2 class="section-title">Do aviso do morador<br /><strong>à notificação automática</strong></h2>
+    <p class="section-desc">
+      O morador avisa pelo WhatsApp, o Guardian registra. Quando o visitante chega e o operador autoriza, o morador é notificado automaticamente.
+    </p>
+
+    <div class="how-grid">
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>Morador avisa sobre a visita</h3>
+            <p>Pelo WhatsApp, o morador informa que terá um visitante ou prestador de serviço. O Guardian entende a mensagem e registra automaticamente no sistema.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>Visitante chega e interfona</h3>
+            <p>O visitante ou prestador chega ao condomínio e aciona o interfone normalmente. O operador de portaria remota atende e verifica os dados.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>Operador autoriza a entrada</h3>
+            <p>Com a visita pré-registrada, o operador confirma a identidade e registra a entrada no sistema. O Guardian captura esse evento em tempo real.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">04</div>
+          <div class="step-content">
+            <h3>Morador recebe a notificação</h3>
+            <p>O Guardian envia automaticamente uma mensagem ao morador informando que seu visitante ou prestador acabou de entrar no condomínio.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT MOCK -->
+      <div class="chat-mock">
+        <div class="chat-header">
+          <div class="chat-avatar">◆</div>
+          <div>
+            <div class="chat-name">Guardian Agent</div>
+            <div class="chat-status">Portaria — Residencial Moinho</div>
+          </div>
+        </div>
+
+        <div class="bubble-group right">
+          <div class="bubble sent">Amanhã às 14h virá um encanador aqui, chama-se Carlos Silva</div>
+          <div class="bubble-time">seg, 09:30</div>
+        </div>
+
+        <div class="bubble-group">
+          <div class="bubble received">Entendido! Registrei a visita de Carlos Silva para terça-feira às 14h. O operador já estará ciente.</div>
+          <div class="bubble-time">seg, 09:30</div>
+        </div>
+
+        <div class="bubble-group">
+          <div class="bubble received">✅ Carlos Silva acaba de entrar no condomínio. Entrada registrada às 14:07.</div>
+          <div class="bubble-time">ter, 14:07</div>
+        </div>
+
+        <div class="bubble-group right">
+          <div class="bubble sent">Ótimo, obrigado!</div>
+          <div class="bubble-time">ter, 14:08</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTELLIGENCE -->
+  <section id="inteligencia">
+    <div class="section-label">Inteligência do condomínio</div>
+    <h2 class="section-title">Não apenas portaria.<br /><strong>O cérebro do condomínio.</strong></h2>
+    <p class="section-desc">
+      O Guardian Agent é a camada de inteligência feita para portarias remotas virtuais. Ele conhece cada regra, dispositivo e prazo do condomínio — e age antes que os problemas apareçam.
+    </p>
+
+    <div class="intel-grid">
+      <div class="intel-card">
+        <div class="intel-symbol">◈</div>
+        <div class="intel-title">Base de conhecimento do condomínio</div>
+        <div class="intel-desc">Procedimentos, regulamentos e regras internas ficam disponíveis para os operadores em tempo real. O Guardian consulta e aplica essas informações em cada interação.</div>
+      </div>
+      <div class="intel-card">
+        <div class="intel-symbol">◇</div>
+        <div class="intel-title">Controle de tags e dispositivos</div>
+        <div class="intel-desc">Monitora tags e controles de acesso de cada morador. Quando um dispositivo está próximo do prazo de entrega ou vencimento, o Guardian notifica automaticamente.</div>
+      </div>
+      <div class="intel-card">
+        <div class="intel-symbol">○</div>
+        <div class="intel-title">Gestão de ocorrências com prazo</div>
+        <div class="intel-desc">Acompanha o ciclo de vida de cada ocorrência registrada. Se uma ocorrência está saindo do prazo de resolução, o Guardian alerta o operador responsável antes que escale.</div>
+      </div>
+      <div class="intel-card">
+        <div class="intel-symbol">▸</div>
+        <div class="intel-title">Escalada inteligente para humanos</div>
+        <div class="intel-desc">Quando uma situação exige julgamento humano, o Guardian identifica e encaminha automaticamente para o operador adequado — sem deixar nenhuma demanda sem resposta.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="recursos">
+    <div class="section-label">Recursos</div>
+    <h2 class="section-title"><strong>Tudo que seu condomínio</strong><br />precisa, integrado</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">◆</div>
+        <div class="feature-title">IA com GPT-4o</div>
+        <div class="feature-desc">Compreensão natural das mensagens, mesmo com erros de digitação ou linguagem informal.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◈</div>
+        <div class="feature-title">Controle de acesso</div>
+        <div class="feature-desc">Registro automático de entradas e saídas com histórico auditável e identificação de visitantes.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">◇</div>
+        <div class="feature-title">Notificação ao morador</div>
+        <div class="feature-desc">Morador é notificado pelo WhatsApp no momento exato em que seu visitante ou prestador entra no condomínio.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⬡</div>
+        <div class="feature-title">Dashboard do síndico</div>
+        <div class="feature-desc">Painel web com métricas de acesso, ocorrências, taxa de resolução automática e relatórios.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">○</div>
+        <div class="feature-title">Multi-condomínio</div>
+        <div class="feature-desc">Um único número WhatsApp atende múltiplos condomínios com isolamento total de dados.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✦</div>
+        <div class="feature-title">Segurança e privacidade</div>
+        <div class="feature-desc">Dados criptografados, conformidade com LGPD e proteção contra acessos não autorizados.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section" id="contato">
+    <h2>Pronto para modernizar<br />sua portaria?</h2>
+    <p>Entre em contato e agende uma demonstração gratuita.</p>
+    <a href="mailto:contato@virtualportaria.com.br" class="btn-primary">contato@virtualportaria.com.br</a>
+  </div>
+
+  <!-- PRIVACY POLICY -->
+  <div class="privacy-section" id="privacidade">
+    <h2>Política de Privacidade</h2>
+    <p>Última atualização: abril de 2026.</p>
+
+    <h3>1. Quem somos</h3>
+    <p>Guardian Agent é um serviço de portaria virtual inteligente via WhatsApp desenvolvido para portarias remotas virtuais, sediado em Maringá, Brasil. Para dúvidas sobre esta política, entre em contato pelo e-mail <a href="mailto:contato@virtualportaria.com.br" style="color:var(--white)">contato@virtualportaria.com.br</a>.</p>
+
+    <h3>2. Dados que coletamos</h3>
+    <p>Para a prestação do serviço, coletamos os seguintes dados:</p>
+    <ul>
+      <li>Número de telefone e mensagens enviadas via WhatsApp por visitantes e moradores</li>
+      <li>Nome, documento e destino informados pelo visitante no momento da visita</li>
+      <li>Registros de acesso (data, hora, apartamento, resultado da autorização)</li>
+      <li>Dados de operadores e síndicos cadastrados na plataforma (nome, e-mail, função)</li>
+    </ul>
+
+    <h3>3. Como usamos os dados</h3>
+    <ul>
+      <li>Identificar e autenticar visitantes junto ao morador responsável</li>
+      <li>Registrar e auditar todos os eventos de acesso ao condomínio</li>
+      <li>Gerar métricas e relatórios para o síndico no painel administrativo</li>
+      <li>Melhorar continuamente a precisão do sistema de IA</li>
+    </ul>
+
+    <h3>4. Compartilhamento de dados</h3>
+    <p>Não vendemos nem comercializamos dados pessoais. Os dados podem ser processados por subprocessadores necessários à operação do serviço, como provedores de infraestrutura em nuvem e a API da Meta (WhatsApp), sempre sob acordos de confidencialidade e proteção de dados.</p>
+
+    <h3>5. Retenção de dados</h3>
+    <p>Os registros de acesso são mantidos por até 12 meses. Dados de moradores e operadores são retidos enquanto o contrato com o condomínio estiver ativo e excluídos em até 30 dias após o encerramento.</p>
+
+    <h3>6. Seus direitos (LGPD)</h3>
+    <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018), você pode solicitar a qualquer momento:</p>
+    <ul>
+      <li>Confirmação da existência de tratamento de seus dados</li>
+      <li>Acesso, correção ou exclusão de seus dados pessoais</li>
+      <li>Portabilidade e revogação do consentimento</li>
+    </ul>
+    <p>Para exercer seus direitos, envie uma solicitação para <a href="mailto:contato@virtualportaria.com.br" style="color:var(--white)">contato@virtualportaria.com.br</a>.</p>
+
+    <h3>7. Segurança</h3>
+    <p>Adotamos medidas técnicas e organizacionais para proteger os dados contra acesso não autorizado, incluindo criptografia em trânsito e em repouso, autenticação com controle de acesso por papel e monitoramento contínuo.</p>
+
+    <h3>8. Alterações nesta política</h3>
+    <p>Esta política pode ser atualizada periodicamente. Alterações relevantes serão comunicadas pelo canal de contato registrado. O uso continuado do serviço após a atualização implica aceitação das novas condições.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Guardian Agent</div>
+    <div class="footer-info">
+      Maringá, Brasil<br />
+      © 2026 Guardian Agent. Todos os direitos reservados.<br />
+      <a href="#privacidade" style="color:var(--gray-400); text-decoration:underline; font-size:12px;">Política de Privacidade</a>
+    </div>
+  </footer>
+
+</body>
+</html>
